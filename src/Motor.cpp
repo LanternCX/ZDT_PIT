@@ -11,7 +11,6 @@ void Motor::init() {
     // 使能电机
     Motor::enable();
 
-    Serial.println("Serial available: " + String(serial.available()));
     // 停止电机运行
     // Motor::stop();
     // 设置电机零点
@@ -155,5 +154,5 @@ void Motor::set_speed(int16_t speed, uint8_t acc) {
  */
 void Motor::exit() {
     Motor::stop();
-    Motor::disable();
+    // Motor::disable();
 }
