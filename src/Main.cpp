@@ -21,35 +21,54 @@ void loop() {
   static int cnt = 0;
   static int dir = 1;
   static bool enable = 1;
-  if (cnt % 15 == 0) {
-    if (enable) {
-      motor_x.set_speed(5 * dir, 0);
-      motor_y.set_speed(2 * dir, 0);
-      cnt %= 15;
-      dir *= -1;
-    }
-  } else {
-    cnt++;
-  }
 
+  static int x_speed = 0;
+  static int y_speed = 0;
+
+  // 串口协议处理
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
 
     input.trim();
 
-    if (input == "STOP") {
+    if (input.startsWith("STOP")) {
       Serial.println("Stop all motor");
-      // motor_x.exit();
-      // motor_y.exit();
-      motor_y.set_speed(0, 0);
-      motor_x.set_speed(0, 0);
+      motor_x.exit();
+      motor_y.exit();
       enable = 0;
-    } else if (input == "RUN"){
+    } 
+
+    if (input.startsWith("RUN")) {
       Serial.println("Motor run");
       enable = 1;
-    } else {
-      Serial.println("Serial received: " + input);
+    } 
+
+    if (input.startsWith("CONTROL")) {
+      // 分割字符串
+      int firstSpace = input.indexOf(' ');
+      int secondSpace = input.indexOf(' ', firstSpace + 1);
+      int thirdSpace = input.indexOf(' ', secondSpace + 1);
+
+      if (firstSpace > 0 && secondSpace > 0 && thirdSpace == -1) {
+        String xStr = input.substring(firstSpace + 1, secondSpace);
+        String yStr = input.substring(secondSpace + 1);
+
+        int x = xStr.toInt();
+        int y = yStr.toInt();
+
+        x_speed = x;
+        y_speed = y;
+
+        x_speed = max(min(x_speed, 10), -10);
+        y_speed = max(min(y_speed, 10), -10);
+
+        Serial.println("x: " + String(x_speed) + " y: " + String(y_speed));
+        if (enable) {
+          motor_x.set_speed(x_speed, 0);
+          motor_y.set_speed(y_speed, 0);
+        }
+      }
     }
   }
-  delay(1000);
+  delay(1);
 }

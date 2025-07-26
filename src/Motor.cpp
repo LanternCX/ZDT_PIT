@@ -38,12 +38,15 @@ void Motor::enable() {
     // 校验字节
     cmd[5] =  0x6B;
     
-    Serial.println("Motor: " + String(addr) + " Enable: ");
-    for (int i = 0; i < 6; i++) {
-        Serial.println("idx: " + String(i) + " " + String(cmd[i], HEX));
-    }
+    // Serial.println("Motor: " + String(addr) + " Enable: ");
+    // for (int i = 0; i < 6; i++) {
+    //     Serial.println("idx: " + String(i) + " " + String(cmd[i], HEX));
+    // }
 
+    // 发送命令
     serial.write(cmd, 6);
+    // 延迟防止总线冲突
+    delay(1);
 }
 
 /**
@@ -66,7 +69,10 @@ void Motor::disable() {
     // 校验字节
     cmd[5] =  0x6B;
 
+    // 发送命令
     serial.write(cmd, 6);
+    // 延迟防止总线冲突
+    delay(1);
 }
 
 /**
@@ -85,7 +91,10 @@ void Motor::set_zero() {
     // 校验字节
     cmd[3] =  0x6B;
 
+    // 发送命令
     serial.write(cmd, 4);
+    // 延迟防止总线冲突
+    delay(1);
 }
 
 /**
@@ -106,7 +115,10 @@ void Motor::stop() {
     // 校验字节   
     cmd[4] =  0x6B;
 
+    // 发送命令
     serial.write(cmd, 5);
+    // 延迟防止总线冲突
+    delay(1);
 }
 
 /**
@@ -138,14 +150,17 @@ void Motor::set_speed(int16_t speed, uint8_t acc) {
     cmd[6] =  0x00;
     // 校验字节
     cmd[7] =  0x6B;
-
-    Serial.println("Motor: " + String(addr) + " Set Speed: ");
-    for (int i = 0; i < 8; i++) {
-        Serial.println("idx: " + String(i) + " " + String(cmd[i], HEX));
-    }
+ 
+    // Serial.println("Motor: " + String(addr) + " Set Speed: ");
+    // for (int i = 0; i < 8; i++) {
+    //     String temp = "idx: " + String(i) + " " + String(cmd[i], HEX);
+    //     Serial.println(temp);
+    // }
     
     // 发送命令
     serial.write(cmd, 8);
+    // 延迟防止总线冲突
+    delay(1);
 }
 
 
@@ -153,6 +168,6 @@ void Motor::set_speed(int16_t speed, uint8_t acc) {
  * @brief exit
  */
 void Motor::exit() {
-    Motor::stop();
+    set_speed(0, 0);
     // Motor::disable();
 }
