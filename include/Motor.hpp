@@ -4,7 +4,6 @@
 class Motor {
     public:
         Motor(HardwareSerial& _serial, int _addr);
-        Motor();
         /**
          * @brief init motor
          */
@@ -39,6 +38,11 @@ class Motor {
          * @brief stop motor
          */
         virtual void stop();
+
+        /**
+         * @brief at exit
+         */
+        virtual void exit();
     private:
         HardwareSerial& serial;
         int addr;

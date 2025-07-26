@@ -39,7 +39,7 @@ void Motor::enable() {
     // 校验字节
     cmd[5] =  0x6B;
     
-    Serial.println("Enable: ");
+    Serial.println("Motor: " + String(addr) + " Enable: ");
     for (int i = 0; i < 6; i++) {
         Serial.println("idx: " + String(i) + " " + String(cmd[i], HEX));
     }
@@ -140,11 +140,20 @@ void Motor::set_speed(int16_t speed, uint8_t acc) {
     // 校验字节
     cmd[7] =  0x6B;
 
-    Serial.println("Set Speed: ");
+    Serial.println("Motor: " + String(addr) + " Set Speed: ");
     for (int i = 0; i < 8; i++) {
         Serial.println("idx: " + String(i) + " " + String(cmd[i], HEX));
     }
     
     // 发送命令
     serial.write(cmd, 8);
+}
+
+
+/**
+ * @brief exit
+ */
+void Motor::exit() {
+    Motor::stop();
+    Motor::disable();
 }
