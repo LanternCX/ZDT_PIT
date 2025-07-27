@@ -54,14 +54,22 @@ class Stepper {
         void set_speed(int16_t speed, uint8_t acc = 0, bool sync = false);
 
         /**
-         * @brief 位置模式控制
+         * @brief 移动相对位置
+         * @param clk 脉冲数（单位：step，正为 CCW，负为 CW）
+         * @param speed 转速（单位 rpm，，范围 ±5000）
+         * @param acc 加速度（0~255），0 表示直接启动
+         * @param is_sync 是否等待同步启动（默认 false）
+         */
+        void set_position(uint32_t clk, int16_t speed, uint8_t acc = 0, bool is_sync = false);
+        
+        /**
+         * @brief 移动相对位置
          * @param clk 脉冲数（单位：step，范围 0 ~ 2^32-1）
          * @param speed 转速（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动
-         * @param is_absolute 是否为绝对位置模式（true 为绝对位置，false 为相对位置）
          * @param is_sync 是否等待同步启动（默认 false）
          */
-        void set_position(uint32_t clk, int16_t speed, uint8_t acc = 0, bool absolute = false, bool sync = false);
+        void add_position(int32_t clk, uint16_t speed, uint8_t acc = 0, bool is_sync = false);
 
         /**
          * @brief 同步启动所有等待同步的电机

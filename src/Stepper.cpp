@@ -63,15 +63,15 @@ void Stepper::set_speed(int16_t speed, uint8_t acc, bool is_sync) {
     send_command(0xF6, cmd, 5);
 }
 
+
 /**
- * @brief 位置模式控制
+ * @brief 设置绝对位置
+ * @param clk 脉冲数（单位：step，范围 0 ~ 2^32-1）
  * @param speed 转速（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
  * @param acc 加速度（0~255），0 表示直接启动
- * @param clk 脉冲数（单位：step，范围 0 ~ 2^32-1）
- * @param is_absolute 是否为绝对位置模式（true 为绝对位置，false 为相对位置）
  * @param is_sync 是否等待同步启动（默认 false）
  */
-void Stepper::set_position(uint32_t clk, int16_t speed, uint8_t acc, bool is_absolute, bool is_sync) {
+void Stepper::set_position(uint32_t clk, int16_t speed, uint8_t acc, bool is_sync) {
     uint8_t dir = speed > 0 ? 0x01 : 0x00;
     uint16_t rpm = abs(speed);
     rpm = rpm > 5000 ? 5000 : rpm;
@@ -93,7 +93,43 @@ void Stepper::set_position(uint32_t clk, int16_t speed, uint8_t acc, bool is_abs
     // 脉冲数第 4 字节
     cmd[7] = (uint8_t)(clk);
     // 相位/绝对标志，false为相对运动，true为绝对值运动
-    cmd[8] = is_absolute;
+    cmd[8] = true;
+    // 多机同步运动标志，false为不启用，true为启用
+    cmd[9] = is_sync;
+
+    send_command(0xFD, cmd, 10);
+}
+
+/**
+ * @brief 移动相对位置
+ * @param clk 脉冲数（单位：step，正为 CCW，负为 CW）
+ * @param speed 转速（单位 rpm，，范围 ±5000）
+ * @param acc 加速度（0~255），0 表示直接启动
+ * @param is_sync 是否等待同步启动（默认 false）
+ */
+void Stepper::add_position(int32_t clk, uint16_t speed, uint8_t acc, bool is_sync) {
+    uint8_t dir = clk > 0 ? 0x01 : 0x00;
+    clk = abs(clk);
+    uint16_t rpm = speed > 5000 ? 5000 : speed;
+
+    uint8_t cmd[10];
+    cmd[0] = dir;
+    // 速度高字节
+    cmd[1] = (uint8_t)(rpm >> 8);
+    // 速度低字节
+    cmd[2] = (uint8_t)(rpm);
+    // 加速度
+    cmd[3] = acc;
+    // 脉冲数第 1 字节
+    cmd[4] = (uint8_t)(clk >> 24);
+    // 脉冲数第 2 字节
+    cmd[5] = (uint8_t)(clk >> 16);
+    // 脉冲数第 3 字节
+    cmd[6] = (uint8_t)(clk >> 8);
+    // 脉冲数第 4 字节
+    cmd[7] = (uint8_t)(clk);
+    // 相位/绝对标志，false为相对运动，true为绝对值运动
+    cmd[8] = false;
     // 多机同步运动标志，false为不启用，true为启用
     cmd[9] = is_sync;
 
