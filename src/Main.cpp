@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "Motor.hpp"
+#include "Stepper.hpp"
 
-Motor motor_x(Serial1, 1);
+Stepper motor_x(Serial1, 1);
 
-Motor motor_y(Serial1, 2);
+Stepper motor_y(Serial1, 2);
 
 void setup() {
   Serial.begin(115200);
@@ -33,8 +33,8 @@ void loop() {
 
     if (input.startsWith("STOP")) {
       Serial.println("Stop all motor");
-      motor_x.exit();
-      motor_y.exit();
+      motor_x.set_speed(0);
+      motor_y.set_speed(0);
       enable = 0;
     } 
 
@@ -64,8 +64,8 @@ void loop() {
 
         Serial.println("x: " + String(x_speed) + " y: " + String(y_speed));
         if (enable) {
-          motor_x.set_speed(x_speed, 0);
-          motor_y.set_speed(y_speed, 0);
+          motor_x.set_speed(x_speed);
+          motor_y.set_speed(y_speed);
         }
       }
     }
