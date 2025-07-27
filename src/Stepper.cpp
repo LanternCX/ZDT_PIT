@@ -143,19 +143,15 @@ void Stepper::sync_all(HardwareSerial& serial) {
  */
 void Stepper::send_command(uint8_t cmd, const uint8_t* data, uint8_t len) {
     uint8_t buf[20];
-    buf[0] = 0x3E;
-    buf[1] = addr_;
-    buf[2] = cmd;
+    buf[0] = addr_;
+    buf[1] = cmd;
     for (uint8_t i = 0; i < len; ++i) {
-        buf[3 + i] = data[i];
+        buf[2 + i] = data[i];
     }
-    uint8_t sum = 0;
-    for (uint8_t i = 0; i < 3 + len; ++i) {
-        sum += buf[i];
-    }
-    buf[3 + len] = sum;
+    buf[2 + len] = 0x6B;
 
-    serial_.write(buf, 4 + len);
+    delay(1);
+    serial_.write(buf, 3 + len);
     // 延迟 1ms 防止总线冲突
     delay(1);
 }

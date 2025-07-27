@@ -43,7 +43,7 @@ void loop() {
       enable = 1;
     } 
 
-    if (input.startsWith("CONTROL")) {
+    if (input.startsWith("SPEED")) {
       // 分割字符串
       int firstSpace = input.indexOf(' ');
       int secondSpace = input.indexOf(' ', firstSpace + 1);
