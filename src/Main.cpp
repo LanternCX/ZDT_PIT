@@ -71,6 +71,7 @@ void serial_on_msg() {
       if (enable) {
         ptz.set_x_speed(x_speed);
         ptz.set_y_speed(y_speed);
+        ptz.sync_all();
       }
     }
   }
@@ -90,13 +91,11 @@ void serial_on_msg() {
       int x_angle = x;
       int y_angle = y;
 
-      x_angle = max(0, x_angle);
-      y_angle = max(0, y_angle);
-
       Serial.println("x: " + String(x_angle) + " y: " + String(y_angle));
       if (enable) {
         ptz.set_x_angle(x_angle);
         ptz.set_y_angle(y_angle);
+        ptz.sync_all();
       }
     }
   }
@@ -120,6 +119,7 @@ void serial_on_msg() {
       if (enable) {
         ptz.add_x_angle(x_angle);
         ptz.add_y_angle(y_angle);
+        ptz.sync_all();
       }
     }
   }

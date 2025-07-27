@@ -9,11 +9,11 @@ void PTZ::init() {
 }
 
 void PTZ::set_x_speed(int16_t speed, uint8_t acc) {
-    stepper_x.set_speed(speed, acc);
+    stepper_x.set_speed(speed, acc, true);
 }
 
 void PTZ::set_y_speed(int16_t speed, uint8_t acc) {
-    stepper_y.set_speed(speed, acc);
+    stepper_y.set_speed(speed, acc, true);
 }
 
 int32_t PTZ::degree_to_step(float angle) {
@@ -22,22 +22,26 @@ int32_t PTZ::degree_to_step(float angle) {
 
 void PTZ::set_x_angle(uint16_t angle, int16_t speed, uint8_t acc) {
     int32_t step = degree_to_step(angle);
-    stepper_x.set_position(step, speed, acc);
+    stepper_x.set_position(step, speed, acc, true);
 }
 
 void PTZ::set_y_angle(float angle, int16_t speed, uint8_t acc) {
     int32_t step = degree_to_step(angle);
-    stepper_y.set_position(step, speed, acc);
+    stepper_y.set_position(step, speed, acc, true);
 }
 
 void PTZ::add_x_angle(float angle, uint16_t speed, uint8_t acc) {
     int32_t step = degree_to_step(angle);
-    stepper_x.add_position(step, speed, acc);
+    stepper_x.add_position(step, speed, acc, true);
 }
 
 void PTZ::add_y_angle(float angle, uint16_t speed, uint8_t acc) {
     int32_t step = degree_to_step(angle);
-    stepper_y.add_position(step, speed, acc);
+    stepper_y.add_position(step, speed, acc, true);
+}
+
+void PTZ::sync_all() {
+    Stepper::sync_all(PTZ::serial);
 }
 
 void PTZ::reset() {

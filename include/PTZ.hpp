@@ -16,21 +16,21 @@ class PTZ {
         /**
          * @brief 云台初始化
          */
-        void init();
+        virtual void init();
 
         /**
          * @brief 设置水平轴电机转速
          * @param speed 转速（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动
          */
-        void set_x_speed(int16_t speed, uint8_t acc = 0);
+        virtual void set_x_speed(int16_t speed, uint8_t acc = 0);
 
         /**
          * @brief 设置垂直轴电机转速
          * @param speed 转速（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        void set_y_speed(int16_t speed, uint8_t acc = 0);
+        virtual void set_y_speed(int16_t speed, uint8_t acc = 0);
 
         /**
          * @brief 设置水平轴角度
@@ -38,7 +38,7 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        void set_x_angle(uint16_t angle, int16_t speed = 30, uint8_t acc = 0);
+        virtual void set_x_angle(uint16_t angle, int16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 设置垂直轴角度
@@ -46,7 +46,7 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        void set_y_angle(float angle, int16_t speed = 30, uint8_t acc = 0);
+        virtual void set_y_angle(float angle, int16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 增加水平轴角度
@@ -54,7 +54,7 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正值，不控制方向）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        void add_x_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
+        virtual void add_x_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 增加垂直轴角度
@@ -62,12 +62,17 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正值，不控制方向）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        void add_y_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
+        virtual void add_y_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 云台状态清零
          */
-        void reset();
+        virtual void reset();
+
+        /**
+         * @brief 
+         */
+        virtual void sync_all();
     private:
         HardwareSerial& serial;
         Stepper stepper_x;

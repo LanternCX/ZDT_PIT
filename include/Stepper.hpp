@@ -17,34 +17,34 @@ class Stepper {
         /**
          * @brief 电机初始化：使能 -> 停止 -> 设零
          */
-        void init();
+        virtual void init();
 
         /**
          * @brief 启用电机
          */
-        void enable();
+        virtual void enable();
 
         /**
          * @brief 禁用电机
          */
-        void disable();
+        virtual void disable();
 
         /**
          * @brief 停止电机运行
          * @param sync 是否等待同步启动（默认 false）
          */
-        void stop(bool sync = 0);
+        virtual void stop(bool sync = 0);
         
         /**
          * @brief 设置当前位置为零点
          * @param is_store 是否存储（默认 false）
          */
-        void set_zero(bool is_store = 0);
+        virtual void set_zero(bool is_store = 0);
 
         /**
          * @brief 将当前位置清零
          */
-        void to_zero();
+        virtual void to_zero();
 
         /**
          * @brief 速度模式控制
@@ -52,7 +52,7 @@ class Stepper {
          * @param acc 加速度（0~255），默认 0 即立即到达
          * @param sync 是否等待同步启动（默认 false）
          */
-        void set_speed(int16_t speed, uint8_t acc = 0, bool sync = false);
+        virtual void set_speed(int16_t speed, uint8_t acc = 0, bool sync = false);
 
         /**
          * @brief 设置绝对位置
@@ -61,7 +61,7 @@ class Stepper {
          * @param acc 加速度（0~255），0 表示直接启动
          * @param is_sync 是否等待同步启动（默认 false）
          */
-        void set_position(uint32_t step, int16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
+        virtual void set_position(int32_t step, int16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
         
         /**
          * @brief 移动相对位置
@@ -70,12 +70,12 @@ class Stepper {
          * @param acc 加速度（0~255），0 表示直接启动
          * @param is_sync 是否等待同步启动（默认 false）
          */
-        void add_position(int32_t step, uint16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
+        virtual void add_position(int32_t step, uint16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
 
         /**
          * @brief 电机状态清零
          */
-        void reset();
+        virtual void reset();
 
         /**
          * @brief 同步启动所有等待同步的电机

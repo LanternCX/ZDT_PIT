@@ -44,10 +44,12 @@ void Stepper::set_speed(int16_t speed, uint8_t acc, bool is_sync) {
     send_command(0xF6, cmd, 5);
 }
 
-void Stepper::set_position(uint32_t step, int16_t speed, uint8_t acc, bool is_sync) {
+void Stepper::set_position(int32_t step, int16_t speed, uint8_t acc, bool is_sync) {
     uint8_t dir = speed > 0 ? 0x01 : 0x00;
     uint16_t rpm = abs(speed);
     rpm = rpm > 5000 ? 5000 : rpm;
+
+    step = (step + 3200) % 3200;
 
     uint32_t clk = step;
 
@@ -124,13 +126,14 @@ void Stepper::reset() {
 }
 
 void Stepper::sync_all(HardwareSerial& serial) {
-    uint8_t buf[5];
-    buf[0] = 0x3E;
-    buf[1] = 0x00;
-    buf[2] = 0x09;
-    buf[3] = 0x01;
-    buf[4] = 0x48;
-    serial.write(buf, 5);
+    uint8_t buf[4];
+    buf[0] = 0x00;
+    buf[1] = 0xFF;
+    buf[2] = 0x66;
+    buf[3] = 0x6B;
+    delay(1);
+    serial.write(buf, 4);
+    delay(1);
 }
 
 void Stepper::send_command(uint8_t cmd, const uint8_t* data, uint8_t len) {
