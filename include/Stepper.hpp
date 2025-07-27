@@ -29,14 +29,15 @@ class Stepper {
          */
         void disable();
 
-        
         /**
          * @brief 停止电机运行
+         * @param sync 是否等待同步启动（默认 false）
          */
         void stop(bool sync = 0);
         
         /**
          * @brief 设置当前位置为零点
+         * @param is_store 是否存储（默认 false）
          */
         void set_zero(bool is_store = 0);
 
@@ -54,22 +55,27 @@ class Stepper {
         void set_speed(int16_t speed, uint8_t acc = 0, bool sync = false);
 
         /**
-         * @brief 移动相对位置
-         * @param clk 脉冲数（单位：step，正为 CCW，负为 CW）
+         * @brief 设置绝对位置
+         * @param step 脉冲数（单位：step，正为 CCW，负为 CW，一圈 3200 步）
          * @param speed 转速（单位 rpm，，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动
          * @param is_sync 是否等待同步启动（默认 false）
          */
-        void set_position(uint32_t clk, int16_t speed, uint8_t acc = 0, bool is_sync = false);
+        void set_position(uint32_t step, int16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
         
         /**
          * @brief 移动相对位置
-         * @param clk 脉冲数（单位：step，范围 0 ~ 2^32-1）
+         * @param step 脉冲数（单位：step）
          * @param speed 转速（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动
          * @param is_sync 是否等待同步启动（默认 false）
          */
-        void add_position(int32_t clk, uint16_t speed, uint8_t acc = 0, bool is_sync = false);
+        void add_position(int32_t step, uint16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
+
+        /**
+         * @brief 电机状态清零
+         */
+        void reset();
 
         /**
          * @brief 同步启动所有等待同步的电机
