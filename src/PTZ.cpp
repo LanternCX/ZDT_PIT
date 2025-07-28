@@ -56,3 +56,14 @@ void PTZ::reset() {
     stepper_x.reset();
     stepper_y.reset();
 }
+
+void PTZ::move_to(float dis, float x, float y, uint16_t speed, uint8_t acc) {
+    float x_angle = atan2(x, dis) * 180.0 / PI;
+    float y_angle = atan2(y, dis) * 180.0 / PI;
+
+    Serial.println("x-angle : " + String(x_angle) + " y-angle: " + String(y_angle));
+
+    set_x_angle(x_angle, speed, acc);
+    set_y_angle(y_angle, speed, acc);
+    sync_all();
+}

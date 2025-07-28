@@ -5,6 +5,9 @@
 
 PTZ ptz(Serial1, 1, 2);
 void serial_on_msg();
+void draw_circle();
+bool draw_circle_flg = 0;
+bool draw_sin_flg = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -22,7 +25,48 @@ void loop() {
   if (Serial.available()) {
     serial_on_msg();
   }
+  if (draw_circle) {
+    draw_circle();
+  }
   delay(1);
+}
+
+void draw_circle() {
+  const int tot = 500;
+  const float x0 = 0, y0 = 0; 
+  const float r = 3;
+  const float a = 2;
+  const float b = 3;
+  static int t = 0;
+
+  float theta = 2 * PI * t / tot;
+  float x = x0 + a * cos(theta);
+  float y = y0 + b * sin(theta);
+
+  ptz.move_to(10, x, y, 300, 0);
+
+  // Serial.println("x : " + String(x) + " y: " + String(y));
+
+  t = (t + 1) % tot; // 周期推进
+  t++;
+  delay(20); // 每20ms更新一次
+}
+
+void draw_sin() {
+  const int tot = 500;  // 总点数
+  const float x0 = 0, y0 = 0;  // 中心点
+  const float amplitude = 3;   // 正弦波振幅
+  const float wavelength = 2;  // 波长（控制正弦波的周期）
+  static int t = 0;
+
+  // x 线性变化，y 为正弦波
+  float x = x0 + wavelength * (2 * PI * t / tot);
+  float y = y0 + amplitude * sin(2 * PI * t / tot);
+
+  ptz.move_to(10, x, y, 10, 0);
+
+  t = (t + 1) % tot; // 周期推进
+  delay(20); // 每20ms更新一次
 }
 
 void serial_on_msg() {
@@ -122,5 +166,17 @@ void serial_on_msg() {
         ptz.sync_all();
       }
     }
+  }
+
+  if (input.startsWith("CIRCLE")) {
+    Serial.println("Draw Circle");
+    draw_circle_flg = !draw_circle_flg;
+    draw_sin_flg = 0;
+  }
+
+  if (input.startsWith("SIN")) {
+    Serial.println("Draw SIN");
+    draw_sin_flg = !draw_circle_flg;
+    draw_circle_flg = 0;
   }
 }

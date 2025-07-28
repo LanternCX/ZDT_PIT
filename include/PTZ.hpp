@@ -64,6 +64,15 @@ class PTZ {
          */
         virtual void add_y_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
 
+
+        /**
+         * @brief 移动到垂直距离为 dis 的平面上坐标为 x, y 的点
+         * @param dis 距离平面的距离
+         * @param x 横坐标
+         * @param y 纵坐标
+         */
+        virtual void move_to(float dis, float x, float y, uint16_t speed = 30, uint8_t acc = 0);
+
         /**
          * @brief 获取水平轴角度
          */
@@ -80,7 +89,7 @@ class PTZ {
         virtual void reset();
 
         /**
-         * @brief 
+         * @brief 同步所有电机
          */
         virtual void sync_all();
     private:
