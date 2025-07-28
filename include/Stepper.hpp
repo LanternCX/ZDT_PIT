@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#define STEPPER_DEBUG 0
+
 /**
  * @brief 步进电机控制器类（用于 Emm_V5.0 闭环驱动器）
  */
@@ -61,12 +63,12 @@ class Stepper {
          * @param acc 加速度（0~255），0 表示直接启动
          * @param is_sync 是否等待同步启动（默认 false）
          */
-        virtual void set_position(int32_t step, int16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
+        virtual void set_position(int32_t step, uint16_t speed = 30, uint8_t acc = 0, bool is_sync = false);
         
         /**
          * @brief 移动相对位置
-         * @param step 脉冲数（单位：step）
-         * @param speed 转速（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
+         * @param step 脉冲数（单位：step，正为 CCW，负为 CW，一圈 3200 步 ）
+         * @param speed 转速（单位 rpm）
          * @param acc 加速度（0~255），0 表示直接启动
          * @param is_sync 是否等待同步启动（默认 false）
          */
@@ -76,6 +78,11 @@ class Stepper {
          * @brief 电机状态清零
          */
         virtual void reset();
+
+        /**
+         * @brief 获取当前电机角度
+         */
+        virtual float get_angle();
 
         /**
          * @brief 同步启动所有等待同步的电机
@@ -94,5 +101,10 @@ class Stepper {
          * @param len 数据长度
          */
         void send_command(uint8_t cmd, const uint8_t* data, uint8_t len);
+
+        /**
+         * @brief 转换步数到角度
+         */
+        static float step_to_degree(int32_t steps);
 };
 

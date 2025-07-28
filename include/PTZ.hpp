@@ -38,7 +38,7 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        virtual void set_x_angle(uint16_t angle, int16_t speed = 30, uint8_t acc = 0);
+        virtual void set_x_angle(float angle, int16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 设置垂直轴角度
@@ -65,6 +65,16 @@ class PTZ {
         virtual void add_y_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
 
         /**
+         * @brief 获取水平轴角度
+         */
+        virtual float get_x_angle();
+
+        /**
+         * @brief 获取垂直轴角度
+         */
+        virtual float get_y_angle();
+
+        /**
          * @brief 云台状态清零
          */
         virtual void reset();
@@ -79,7 +89,7 @@ class PTZ {
         Stepper stepper_y;
 
         /**
-         * @brief 转换角度到步长
+         * @brief 转换角度到步数
          * @param angle 角度
          */
         static int32_t degree_to_step(float angle);

@@ -44,14 +44,12 @@ void Stepper::set_speed(int16_t speed, uint8_t acc, bool is_sync) {
     send_command(0xF6, cmd, 5);
 }
 
-void Stepper::set_position(int32_t step, int16_t speed, uint8_t acc, bool is_sync) {
-    uint8_t dir = speed > 0 ? 0x01 : 0x00;
-    uint16_t rpm = abs(speed);
-    rpm = rpm > 5000 ? 5000 : rpm;
-
-    step = (step + 3200) % 3200;
-
-    uint32_t clk = step;
+void Stepper::set_position(int32_t step, uint16_t speed, uint8_t acc, bool is_sync) {
+    uint8_t dir = step > 0;
+    uint16_t rpm = speed > 5000 ? 5000 : speed;
+    step %= 3200;
+    
+    uint32_t clk = abs(step);
 
     uint8_t cmd[10];
     cmd[0] = dir;
@@ -145,8 +143,106 @@ void Stepper::send_command(uint8_t cmd, const uint8_t* data, uint8_t len) {
     }
     buf[2 + len] = 0x6B;
 
+    if (STEPPER_DEBUG) {
+        String debug;
+        for (int i = 0; i < 3 + len; i++) {
+            if (buf[i] < 0x10) debug += "0";  // 补0
+            debug += String(buf[i], HEX) + " ";
+        }
+        Serial.println("Send: " + debug);
+    }
+
     delay(1);
     serial_.write(buf, 3 + len);
     // 延迟 1ms 防止总线冲突
     delay(1);
+}
+
+float Stepper::get_angle() {
+    // 等待所有命令发送完毕
+    delay(1);
+    // 清空串口缓冲区
+    while (serial_.available()) {
+        serial_.read();
+    }
+
+    // 发送读取实时位置命令
+    send_command(0x36, nullptr, 0);
+
+    const int expected_len = 8;
+    uint8_t buffer[expected_len];
+    int index = 0;
+
+    unsigned long start_time = millis();
+
+    // 滑动窗口，寻找帧头 addr_ + 0x36
+    while (true) {
+        // 超时保护：2 秒内未找到帧头则退出
+        if (millis() - start_time > 2000) {
+            Serial.println("Timeout waiting for response header");
+            return 0.0f;
+        }
+
+        // 确保至少有两个字节
+        if (serial_.available() < 2) {
+            continue;
+        }
+
+        uint8_t b1 = serial_.read();
+        uint8_t b2 = serial_.read();
+        if (b1 != addr_ || b2 != 0x36) {
+            continue;
+        }
+
+        // 帧头匹配成功，保存前两个字节
+        buffer[0] = b1;
+        buffer[1] = b2;
+
+        // 接收后续6字节
+        int remaining = 6;
+        int i = 2;
+        unsigned long last_recv_time = millis();
+
+        while (remaining > 0) {
+            if (serial_.available()) {
+                buffer[i++] = serial_.read();
+                remaining--;
+                last_recv_time = millis();
+            } else {
+                if (millis() - last_recv_time > 100) {
+                    Serial.println("Timeout receiving remaining data");
+                    return 0.0f;
+                }
+            }
+        }
+        break;  // 成功接收到完整帧，跳出主循环
+    }
+
+    if (STEPPER_DEBUG) {
+        // 打印调试数据
+        String debug;
+        for (int i = 0; i < 8; i++) {
+            if (buffer[i] < 0x10) debug += "0";  // 补0
+            debug += String(buffer[i], HEX) + " ";
+        }
+        Serial.println("Received: " + debug);
+    }
+
+    // 解析符号和位置
+    bool is_negative = (buffer[2] == 0x01);
+    uint32_t pos = ((uint32_t)(buffer[3]) << 24) 
+        | ((uint32_t)(buffer[4]) << 16)
+        | ((uint32_t)(buffer[5]) << 8)
+        | ((uint32_t)(buffer[6]) << 0);
+
+    float angle = pos * 360.0f / 65536.0f;
+    if (is_negative) angle = -angle;
+
+    return angle;
+}
+
+
+
+float Stepper::step_to_degree(int32_t steps) {
+    return static_cast<float>(steps) * 360.0f / 3200.0f;
 }

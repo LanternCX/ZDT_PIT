@@ -20,7 +20,7 @@ int32_t PTZ::degree_to_step(float angle) {
     return static_cast<int32_t>((angle) * 3200.0f / 360.0f + 0.5f);
 }
 
-void PTZ::set_x_angle(uint16_t angle, int16_t speed, uint8_t acc) {
+void PTZ::set_x_angle(float angle, int16_t speed, uint8_t acc) {
     int32_t step = degree_to_step(angle);
     stepper_x.set_position(step, speed, acc, true);
 }
@@ -38,6 +38,14 @@ void PTZ::add_x_angle(float angle, uint16_t speed, uint8_t acc) {
 void PTZ::add_y_angle(float angle, uint16_t speed, uint8_t acc) {
     int32_t step = degree_to_step(angle);
     stepper_y.add_position(step, speed, acc, true);
+}
+
+float PTZ::get_x_angle() {
+    return stepper_x.get_angle();
+}
+
+float PTZ::get_y_angle() {
+    return stepper_y.get_angle();
 }
 
 void PTZ::sync_all() {
