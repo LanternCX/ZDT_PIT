@@ -102,4 +102,10 @@ class PTZ {
          * @param angle 角度
          */
         static int32_t degree_to_step(float angle);
+
+        float last_x_angle = 0;  // 记录上一次水平角度
+        float last_y_angle = 0;  // 记录上一次垂直角度
+        
+        // 速度平滑滤波器 (高斯加权)
+        virtual float smooth_speed(float current, float last);
 };
