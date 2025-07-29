@@ -11,32 +11,24 @@ bool draw_square_flg = 0;
 constexpr float FRAME_DT = 0.02f; // 20 ms
 
 void draw_circle() {
-    const int tot = 2000;
-    const float x0 = 0, y0 = 0; 
-    const float r = 3;
-    const float a = 2;
-    const float b = 3;
-    static int t = 0;
-    const float dis = 10.0f; // 固定距离
+  const int tot = 500;
+  const float x0 = 0, y0 = 0; 
+  const float r = 3;
+  const float a = 2;
+  const float b = 3;
+  static int t = 0;
 
-    // 非线性插值参数 (增加起点/终点平滑度)
-    float progress = (float)t / tot;
-    float eased_progress = progress < 0.5f 
-        ? 2 * progress * progress 
-        : 1 - pow(-2 * progress + 2, 2) / 2;
-    
-    float theta = 2 * PI * eased_progress;
-    float x = x0 + a * cos(theta);
-    float y = y0 + b * sin(theta);
-    
-    // 动态速度控制 (圆周运动中变速)
-    float dynamic_speed = 30 + 20 * sin(theta); // 30±20 RPM变化
-    
-    ptz.move_to(dis, x, y, dynamic_speed, 10); // 使用加速度控制
-    
-    // 周期更新 (带边界检查)
-    t = (t + 1) % tot;
-    delay(15); // 略微缩短延迟
+  float theta = 2 * PI * t / tot;
+  float x = x0 + a * cos(theta);
+  float y = y0 + b * sin(theta);
+
+  ptz.move_to(10, x, y, 10, 0);
+
+  // Serial.println("x : " + String(x) + " y: " + String(y));
+
+  t = (t + 1) % tot; // 周期推进
+  t++;
+  delay(20); // 每20ms更新一次
 }
 
 void draw_sin() {
@@ -168,6 +160,25 @@ void serial_on_msg() {
         ptz.add_x_angle(x_angle);
         ptz.add_y_angle(y_angle);
         ptz.sync_all();
+      }
+    }
+  }
+
+  if (input.startsWith("MOVE")) {
+    int firstSpace = input.indexOf(' ');
+    int secondSpace = input.indexOf(' ', firstSpace + 1);
+    int thirdSpace = input.indexOf(' ', secondSpace + 1);
+
+    if (firstSpace > 0 && secondSpace > 0 && thirdSpace == -1) {
+      String xStr = input.substring(firstSpace + 1, secondSpace);
+      String yStr = input.substring(secondSpace + 1);
+
+      int x = xStr.toInt();
+      int y = yStr.toInt();
+
+      Serial.println("x: " + String(x) + " y: " + String(y));
+      if (enable) {
+        ptz.move_to(10, x, y, 10, 0);
       }
     }
   }
