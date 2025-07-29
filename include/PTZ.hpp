@@ -38,7 +38,7 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        virtual void set_x_angle(float angle, int16_t speed = 30, uint8_t acc = 0);
+        virtual void set_x_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 设置垂直轴角度
@@ -46,7 +46,7 @@ class PTZ {
          * @param speed 到位速度（单位 rpm，正为 CCW，负为 CW，范围 ±5000）
          * @param acc 加速度（0~255），0 表示直接启动，默认 0
          */
-        virtual void set_y_angle(float angle, int16_t speed = 30, uint8_t acc = 0);
+        virtual void set_y_angle(float angle, uint16_t speed = 30, uint8_t acc = 0);
 
         /**
          * @brief 增加水平轴角度
